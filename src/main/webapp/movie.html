@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/qrcode.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="/js/dtaTables-1.10.18/css/jquery.dataTables.css">
+    <script src="/js/dtaTables-1.10.18/js/jquery.dataTables.js"></script>
+    <!--bootstarp的插件-->
+    <link rel="stylesheet" href="/js/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <script src="/js/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+
+    <!--bootbox-->
+    <script type="text/javascript"  src="/js/bootbox/bootbox.min.js"></script>
+    <script type="text/javascript"  src="/js/bootbox/bootbox.locales.min.js"></script>
+
+    <!--datatimer-->
+    <link rel="stylesheet" href="/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+    <script src="/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+
+    <!--引入fileInput-->
+    <link href="/js/bootstrap-fileinput-v5.0.6-17/css/fileinput.css" rel="stylesheet" type="text/css">
+    <script src="/js/bootstrap-fileinput-v5.0.6-17/js/fileinput.js"></script>
+    <!--validate-->
+    <link href="/js/bootstrapvalidator-v0.5.2-0/dist/css/bootstrapValidator.min.css">
+    <script src="/js/bootstrapvalidator-v0.5.2-0/dist/js/bootstrapValidator.min.js"></script>
+
+</head>
+<body>
+
+
+<!-- 查询条件面板 -->
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        条件查询
+    </div>
+    <div class="panel-body">
+        <form id="queryForm" class="form-horizontal">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">电影名称:</label>
+                            <div class="col-sm-10">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="searchMovieName">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">放映室:</label>
+                            <div class="col-sm-10">
+                                <div class="input-group">
+                                    <select class="form-control" id="searchShowHome" >
+                                        <option value='-1'>请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">查看电影:</label>
+                                <div class="col-sm-10">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="num" value="1" >查询售完电影
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="num"   value="0">查询未售完电影
+                                        </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               <div class="row">
+                <div style="padding-left:120px">
+                    <button type="button" onclick="search()" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-search"></span>查询
+                    </button>
+                    &nbsp;
+                    <button type="reset" class="btn btn-danger">
+                        <span class="glyphicon glyphicon-refresh"></span>重置
+                    </button>
+                </div>
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="panel panel-primary">
+
+    <div class="panel-heading">
+        <font class="panel-title">订单展示</font>
+        <button type="button"  onclick="addMovie()" class="btn btn-success">添加电影</button>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped  table-bordered  table-hover" id="queryMovieTable">
+
+        </table>
+    </div>
+</div>
+
+
+<!--<%&#45;&#45; 添加  &#45;&#45;%>-->
+<div id="addDiv" style="display: none">
+
+    <form id="addForm" class="form-horizontal" role="form">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">电影名称</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="movieName" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="showTime" class="col-sm-2 control-label">放映时间</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="showTime" autocomplete="off">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="movieNum" class="col-sm-2 control-label">剩余票数</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="movieNum" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="moviePrice" class="col-sm-2 control-label">电影价格</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="moviePrice" >
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="imgUrl" class="col-sm-2 control-label">电影海报</label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" name="img" id="imgUrl">
+                <input type="text" class="form-control" id="hiddenImgPath">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="showHome" class="col-sm-2 control-label">放映室</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="showHome" >
+                    <option value='-1'>请选择</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="button"  onclick="addData()" class="btn btn-success">添加</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+</body>
+<script type="text/javascript">
+
+
+    $(function () {
+        movieTable();
+        showHome();
+    })
+
+function num() {
+    $.post({
+        url:"http://localhost:8080/movie/queryHome.do",
+        dataType:"json",
+        success:function (rs) {
+            if(rs.code == 200){
+                home = rs.data;
+                var homeHtml = "<option value='-1'>请选择</option>";
+                for (var i = 0; i <home.length ; i++) {
+                    homeHtml+="<option value='"+home[i].homeId+"'>"+home[i].homeName+"</option>";
+                }
+                $("#showHome",addBox).html(homeHtml);
+                $("#searchShowHome",addBox).html(homeHtml);
+            }
+        },error:function () {
+            alert("添加失败");
+        }
+    })
+}
+
+
+
+    var dataTable;
+    var chineseLanguage = {
+        "sProcessing": "处理中...",
+        "sLengthMenu": "显示 _MENU_ 项结果",
+        "sZeroRecords": "没有匹配结果",
+        "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+        "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+        "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+        "sInfoPostFix": "",
+        "sSearch": "搜索:",
+        "sUrl": "",
+        "sEmptyTable": "表中数据为空",
+        "sLoadingRecords": "载入中...",
+        "sInfoThousands": ",",
+        "oPaginate": {
+            "sFirst": "首页",
+            "sPrevious": "上页",
+            "sNext": "下页",
+            "sLast": "末页"
+        },
+        "oAria": {
+            "sSortAscending": ": 以升序排列此列",
+            "sSortDescending": ": 以降序排列此列"
+        }
+    };
+    function movieTable() {
+        dataTable=$('#queryMovieTable').DataTable( {
+            serverSide: true,
+            ajax: {
+                url: 'http://localhost:8080/movie/queryMovie.do',
+            },
+            language:chineseLanguage,
+            searching: false,
+            ordering:  false,
+            lengthMenu:[2,3,5,10],//设置每页显示条数下拉框中值
+            //使用对象数组，一定要配置columns，告诉 DataTables 每列对应的属性
+            //data 这里是固定不变的，name，position，salary，office 为你数据里对应的属性\
+            columns:[
+                {title:"电影id",data:'movieId'},
+                {title:"电影名称",data:'movieName'},
+                {title:"上映时间",data:'showTime',render:function(data,type,row,meta){
+                        /*return longToDateTime(data);*/
+                        var d=new Date(data);
+                        return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+                    }},
+                {title:"剩余票数",data:'movieNum',
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        if ( cellData == 0) {
+                            var tr = $(td).parent();
+                            tr.css("background", 'red')
+                        }
+                    }
+                },
+                {title:"电影价格",data:'moviePrice'},
+                {title:"放映厅",data:'showHome' ,render:function(data){
+                        return data==1?"第一放映室":"第二放映室";
+                    }},
+                {title:"电影图片",data:'imgUrl'
+                    ,render:function ( data, type, row, meta) {
+                        if(data!=null){
+                            /* var imgpath=data.substr(data.lastIndexOf("/imgs"));*/
+                            var img='<img id="showImg" width="50px" src="'+data+'" height="50px">';
+                            return img;
+                        }else{
+                            return "";
+                        }
+
+                    }
+                },
+                { data: 'movieId',title:"操作",render:function ( data, type, row, meta) {
+                        var html;
+                    if(row.movieNum==0){
+                        html='<button onclick="toUpdatemovieNum('+data+')" disabled >已售完</button>\n';
+                    }else {
+                        html='<button onclick="toUpdatemovieNum('+data+')">购票</button>\n';
+                    }
+                        return html;
+                    } }
+            ],info:false
+        } );
+
+    }
+    var dataTable=undefined;
+    function search(){
+        var param={};
+        var searchMovieName =  $("#searchMovieName").val();
+        var showHome =  $("#searchShowHome").val();
+        var num=$("[name='num']:checked").val();
+
+        param.movieName=searchMovieName;
+        param.showHome=showHome;
+        param.movieNum=num;
+alert(num);
+        // alert(dataTable)
+        if(dataTable==undefined){
+            movieTable();
+        }else {
+            dataTable.settings()[0].ajax.data=param;
+            dataTable.ajax.reload();
+        }
+    }
+
+
+var home;
+    function showHome() {
+        $.post({
+            url:"http://localhost:8080/movie/queryHome.do",
+            dataType:"json",
+            success:function (rs) {
+               if(rs.code == 200){
+                   home = rs.data;
+                   var homeHtml = "<option value='-1'>请选择</option>";
+                   for (var i = 0; i <home.length ; i++) {
+                       homeHtml+="<option value='"+home[i].homeId+"'>"+home[i].homeName+"</option>";
+                   }
+                   $("#showHome",addBox).html(homeHtml);
+                   $("#searchShowHome",addBox).html(homeHtml);
+               }
+            },error:function () {
+                alert("添加失败");
+            }
+        })
+    }
+
+
+var addBox;
+function addMovie() {
+    //获取弹框的页面格式
+    var htmls = $("#addDiv ").html();
+    addBox = bootbox.dialog({//模态框
+        title: "注册信息",
+        message: htmls
+    });
+
+    $("#imgUrl",addBox).fileinput({
+        uploadUrl:"http://localhost:8080/movie/uploadFIle.do", //上传的地址
+        browseClass:"btn btn-success", //按钮样式
+        dropZoneEnabled: false
+    }).on("fileuploaded", function(e, data, previewiId, index) {
+        //把文件的访问路径  赋给隐藏域
+        $("#hiddenImgPath",addBox).val(data.response.imgPath);
+    });
+
+    $("#showTime",addBox).datetimepicker({
+        format: 'yyyy-mm-dd',  //显示格式
+        language:"zh-CN",
+        minView : 2
+    });
+
+}
+function addData() {
+debugger
+    //得到校验的结果
+    var movieName=$("#movieName",addBox).val();
+    var showTime=$("#showTime",addBox).val();
+    var movieNum=$("#movieNum",addBox).val();
+    var moviePrice=$("#moviePrice",addBox).val();
+    var showHome=$("#showHome",addBox).val();
+    var imgUrl=$("#hiddenImgPath",addBox).val();
+
+
+    $.post({
+        url:"http://localhost:8080/movie/addMovie.do",
+        dataType:"json",
+        data:{
+            movieName:movieName,
+            showTime:showTime,
+            movieNum:movieNum,
+            moviePrice:moviePrice,
+            showHome:showHome,
+            imgUrl:imgUrl,
+        },
+        success:function (rs) {
+            if(rs.code==200){
+                addBox.modal("hide");
+            }
+        },error:function () {
+            alert("添加失败");
+        }
+    })
+}
+function toUpdatemovieNum(movieId) {
+
+    $.post({
+        url:"http://localhost:8080/movie/toUpdatemovieNum.do",
+        dataType:"json",
+        data:{
+            "movieId":movieId,
+        },
+        success:function (rs) {
+            if(rs.code==200){
+                alert("购票成功");
+                history.go(0);
+            }
+        },error:function () {
+            alert("购票失败");
+        }
+    })
+}
+
+</script>
+</html>
